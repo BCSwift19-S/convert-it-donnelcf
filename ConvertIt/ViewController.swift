@@ -14,6 +14,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var fromUnitsLabel: UILabel!
     @IBOutlet weak var resultsLabel: UILabel!
     @IBOutlet weak var formulaPicker: UIPickerView!
+    @IBOutlet weak var decimalSegment: UISegmentedControl!
     
     var formulaArray = ["Miles to Kilometers",
                         "Kilometers to Miles",
@@ -29,11 +30,15 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         formulaPicker.delegate = self
         formulaPicker.dataSource = self
+        conversionString = formulaArray[formulaPicker.selectedRow(inComponent: 0)]
     }
     
     func calculateConversion() {
         var outputValue = 0.0
-        if let inputValue = Double(userInput.text!) {
+        guard let inputValue = Double(userInput.text!) else {
+            print("value entered was not a number")
+            return
+        }
             
             switch conversionString {
             case "Miles to Kilometers":
@@ -51,16 +56,18 @@ class ViewController: UIViewController {
             default:
                 print("show alert for bad conversion string")
             }
-            resultsLabel.text = "\(inputValue) \(fromUnits) = \(outputValue) \(toUnits)"
-        } else {
-            print("value entered was not a number")
-        }
         
-        
+        let formatString = (decimalSegment.selectedSegmentIndex < decimalSegment.numberOfSegments-1 ? "%.\(decimalSegment.selectedSegmentIndex + 1)f" : "%f")
+        let outputString = String(format: formatString, outputValue)
+            resultsLabel.text = "\(inputValue) \(fromUnits) = \(outputString) \(toUnits)"
     }
     
+    @IBAction func decimalSelected(_ sender: UISegmentedControl) {
+        calculateConversion()
+    }
     
     @IBAction func convertButtonPressed(_ sender: UIButton) {
+        calculateConversion()
     }
     
 
